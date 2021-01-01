@@ -60,7 +60,7 @@ function PlayState:update(dt)
     end
 
     if self.bird.y > VIRTUAL_HEIGHT - 15 then
-        gStateMachine:change('scrote',{
+        gStateMachine:change('score',{
             score = self.score
         })
     end
