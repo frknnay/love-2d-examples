@@ -1,9 +1,9 @@
 require 'src/Dependencies'
 
+math.randomseed(os.time())
+
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
-
-    math.randomseed(os.time())
 
     love.window.setTitle('Breakout')
 
@@ -41,6 +41,11 @@ function love.load()
         ['music'] = love.audio.newSource('sounds/music.wav','stream')
     }
 
+    gFrames = {
+        ['paddles'] = GenerateQuadsPaddles(gTextures['main']),
+        ['balls'] = GenerateQuadsBalls(gTextures['main'])
+    }
+
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         vsync = true,
         fullscreen = false,
@@ -48,7 +53,8 @@ function love.load()
     })
 
     gStateMachine = StateMachine {
-        ['start'] = function() return StartState() end
+        ['start'] = function() return StartState() end,
+        ['play'] = function() return PlayState() end
     }
 
     gStateMachine:change('start')
