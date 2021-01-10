@@ -34,13 +34,45 @@ function PlayState:update(dt)
     self.ball:update(dt)
 
     if self.ball:isColliding(self.paddle) then
+        self.ball.y = self.paddle.y - 8
         self.ball.dy = -self.ball.dy
+
+        if self.ball.x < self.paddle.x + (self.paddle.width / 2) and self.paddle.dx < 0 then
+            self.ball.dx = -50 + -(8 * (self.paddle.x + self.paddle.width / 2 - self.ball.x))
+        elseif self.ball.x > self.paddle.x + (self.paddle.width / 2) and self.paddle.dx > 0 then
+            self.ball.dx = 50 + (8 * math.abs(self.paddle.x + self.paddle.width / 2 - self.ball.x))
+        end
+
         gSounds['paddle-hit']:play()
     end
 
     for k, brick in pairs(self.bricks) do
         if brick.inPlay and self.ball:isColliding(brick) then
             brick:hit()
+
+            -- left edge
+            -- +2 to fix weird collision issues
+            if self.ball.x + 2 < brick.x and self.ball.dx > 0 then
+                self.ball.dx = -self.ball.dx
+                self.ball.x = brick.x - self.ball.width
+            -- right edge
+            elseif self.ball.x + 6 > brick.x + brick.width and self.ball.dx < 0 then
+                self.ball.dx = -self.ball.dx
+                self.ball.x = brick.x + 32
+            -- top edge
+            elseif self.ball.y < brick.y then
+                self.ball.dy = -self.ball.dy
+                self.ball.y = brick.y - 8
+            -- bottom edge
+            else
+                self.ball.dy = -self.ball.dy
+                self.ball.y = brick.y + 16
+            end
+
+            self.ball.dy = self.ball.dy * 1.02
+            
+            -- allow collision for only one brick
+            break
         end
     end
 
